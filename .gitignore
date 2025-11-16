@@ -1,4 +1,5 @@
 .env
 *.docx
 *.pdf
+*.tmp
 /faiss_index/*
