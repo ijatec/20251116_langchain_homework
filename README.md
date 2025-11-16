@@ -1,32 +1,54 @@
-# 학생 학습 코치 Q&A 챗봇
 
-간략한 설명
 
-## 목차
-* [프로젝트 설명](#프로젝트-설명)
-* [설치 방법](#설치-방법)
-* [사용 방법](#사용-방법)
-* [라이선스](#라이선스)
+## 🚀 프로젝트 소개
 
-## 프로젝트 설명
-이 프로젝트는 사용자가 업로드한 PDF나 텍스트 문서를 기반으로 내용을 검색하고 질의응답을 제공하는
-간단한 RAG(ChatGPT + 벡터검색) 챗봇을 구현하기 위한 것이다.
-LangChain과 FAISS 벡터스토어를 활용하여 문서를 임베딩하고, 
-사용자의 질문과 유사한 문서 조각을 찾아 답변을 생성함으로써 
-긴 문서를 빠르게 이해하고 필요한 정보를 쉽게 찾을 수 있도록 돕는 것을 목표로 한다.
+이 프로젝트는 **PDF/TXT 문서를 기반으로 학습 및 리서치를 자동화하여**,  
+**요약 · 레포트 목차 설계 · 핵심 내용 정리 · 예상 시험문제 생성**을 빠르고 정확하게 만들어주는 **RAG 기반 Streamlit 웹 챗봇**입니다.
 
-## 설치 방법
-1.  저장소 복제 (Clone)
-    ```bash
-    git clone [저장소 주소]
-    ```
-2.  의존성 설치
-    ```bash
-    npm install
-    ```
-3.  (추가적인 설치 단계가 있다면 기재) [1]
+문서 기반 자동 분석뿐 아니라, **대화형 모드 + 히스토리 기억 기능**도 지원하여  
+사용자와 지속적·맥락 기반 질문 응답이 가능합니다.
 
-## 사용 방법
-**기본 사용 예시:**
+---
+
+## 🧠 주요 기능 (Key Features)
+
+| 기능 | 설명 |
+|------|------|
+| 📂 문서 업로드 | PDF, TXT 최대 5개 업로드 |
+| 🔍 문서 기반 검색 | FAISS + Embedding 기반 Context Retrieval |
+| 📝 모드 기반 자동 처리 | 요약, 목차 설계, 핵심 정리, 예상 시험 문제 |
+| 💬 자유 질의응답 | 히스토리 기억 기반 AI 대화 지원 |
+| 🎨 세련된 UI | Streamlit + Custom CSS 적용 |
+
+---
+
+## 🛠️ 기술 스택 (Tech Stack)
+
+| Category | Tools |
+|---------|----------------------------|
+| Backend | Python 3.x |
+| Framework | Streamlit |
+| AI/LLM Engine | OpenAI GPT 모델 |
+| Retrieval | FAISS Vector DB |
+| Prompting | LangChain Runnables |
+| Styling | Custom CSS + Gradient UI |
+
+---
+
+## 📸 화면 구성 미리보기 (UI Preview)
+
+## 📦 설치 및 실행 방법
+
+## 필수 패키지 설치
+
 ```bash
-npm start
+pip install -r requirements.txt
+
+## 환경 변수 설정
+
+.env 파일 생성 후 입력:
+OPENAI_API_KEY=your_api_key_here
+
+## 실행
+
+streamlit run app.py
