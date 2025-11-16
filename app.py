@@ -162,7 +162,7 @@ def build_history_text():
 # Streamlit UI
 # -------------------------------
 st.set_page_config(
-    page_title="과제 도우미 챗봇",
+    page_title="문서 기반 과제 도우미 챗봇",
     page_icon="📚",
     layout="wide",
 )
@@ -251,6 +251,7 @@ custom_css = """
 .app-steps {
     font-size: 0.92rem;
     color: #4b5563;
+    margin-bottom: 0.25rem;
 }
 
 .app-steps li {
@@ -297,11 +298,11 @@ st.markdown(custom_css, unsafe_allow_html=True)
 st.markdown(
     """
     <div class="app-hero">
-        <div class="app-badge">📚 과제·레포트 전용 · RAG 챗봇</div>
-        <div class="app-hero-title">과제 도우미 챗봇</div>
+        <div class="app-badge">📚 과제/레포트 전용 RAG 챗봇</div>
+        <div class="app-hero-title">문서 기반 과제 도우미 챗봇</div>
         <div class="app-hero-subtitle">
-            PDF · TXT를 업로드하면, 요약부터 레포트 목차, 핵심 정리, 예상 시험문제까지<br/>
-            문서 내용을 토대로 자연스럽게 도와주는 AI 조교입니다.
+            반갑습니다!! <br/> PDF나 TXT 파일을 업로드하면, 요약부터 레포트 목차, 핵심 정리, 예상 시험문제까지<br/>
+            문서 내용을 토대로 자연스럽게 도와주는 AI 도우미 입니다.
         </div>
     </div>
     """,
@@ -315,9 +316,10 @@ st.markdown(
 <strong>이렇게 활용해 보세요.</strong>
 
 <ul class="app-steps">
-<li><b>1단계 · 문서 업로드</b> – 강의록, 교재 PDF, 논문, 보고서 초안 등 최대 5개까지 올립니다.</li>
-<li><b>2단계 · 작업 모드 선택</b> – 요약, 레포트 목차 설계, 핵심 내용 정리, 예상 시험문제 생성 중 선택하거나, 자유 대화 모드로 전환합니다.</li>
-<li><b>3단계 · 질문 또는 자동 실행</b> – 선택한 모드에 맞게 질문하면, 문서 내용을 우선으로 답변합니다.</li>
+<li><b>1단계 : 문서 업로드</b> – 강의록, 교재 PDF, 논문, 보고서 초안 등 최대 5개까지 올립니다.</li>
+<li><b>2단계 : 작업 모드 선택</b> – 요약, 레포트 목차 설계, 핵심 내용 정리, 예상 시험문제 생성 중 선택하여 간단하게 결과물을 얻거나,  
+자유 대화 모드로 전환하여 자유롭게 질문합니다.</li>
+<li><b>3단계 : 자동 실행 또는 질문</b> – 선택한 모드에 맞게 질문하면, 문서 내용을 우선으로 답변합니다.</li>
 </ul>
 </div>
 """,
