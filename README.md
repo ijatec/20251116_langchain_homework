@@ -35,20 +35,14 @@
 
 ---
 
-## 📸 화면 구성 미리보기 (UI Preview)
 
 ## 📦 설치 및 실행 방법
 
-## 필수 패키지 설치
-
-```bash
+필수 패키지 설치
 pip install -r requirements.txt
-
-## 환경 변수 설정
 
 .env 파일 생성 후 입력:
 OPENAI_API_KEY=your_api_key_here
 
-## 실행
-
+실행
 streamlit run app.py

@@ -10,6 +10,7 @@ from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.chat_models import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
+from langchain_classic.memory import ConversationBufferWindowMemory
 
 # -------------------------------
 # 환경 설정
@@ -146,18 +147,6 @@ def build_rag_chain(vectordb, task_mode: str, active_sources):
     return rag_chain
 
 
-# 대화내용 요약용
-def build_history_text():
-    # 최근 6~8개 정도만 사용 (너무 길면 프롬프트 폭발)
-    msgs = st.session_state.chat_messages[-8:]
-
-    lines = []
-    for m in msgs:
-        role = "사용자" if m["role"] == "user" else "AI"
-        lines.append(f"{role}: {m['content']}")
-    return "\n".join(lines)
-
-
 # -------------------------------
 # Streamlit UI
 # -------------------------------
@@ -198,8 +187,8 @@ custom_css = """
 
 /* === 결과 헤더용 컴팩트 카드 === */
 .result-header-card {
-    display: inline-block;           /* 전체 가로폭 다 쓰지 않고 텍스트만 감싸게 */
-    padding: 0.25rem 0.55rem;         /* 세로/가로 패딩 줄이기 */
+    display: inline-block;
+    padding: 0.25rem 0.55rem;
     border-radius: 0.8rem;
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(180, 196, 255, 0.7);
@@ -343,6 +332,12 @@ if "last_task_mode" not in st.session_state:
     st.session_state.last_task_mode = None
 if "last_task_result" not in st.session_state:
     st.session_state.last_task_result = None
+if "memory" not in st.session_state:
+    # 최근 10회 프롬프트에 포함
+    st.session_state.memory = ConversationBufferWindowMemory(
+        k=10,
+        return_messages=False
+    )
 
 # -------------------------------
 # 1️⃣ 문서 업로드
@@ -376,9 +371,11 @@ if uploaded_files:
         st.session_state.vectordb = create_vectorstore(all_docs)
         st.session_state.sources = new_sources
 
-        # 기존 작업 결과/상태 초기화
+        # 기존 작업 결과/상태 및 메모리 초기화
         st.session_state.last_task_mode = None
         st.session_state.last_task_result = None
+        st.session_state.chat_messages = []
+        st.session_state.memory.clear()
 
         st.success(f"✅ 문서 {len(new_sources)}개를 분석했습니다. 이제 아래에서 작업 모드를 선택해 보세요.")
 
@@ -399,10 +396,11 @@ mode = st.radio(
 
 is_template_mode = mode.startswith("🧩")
 
-# 모드가 변경되면(특히 대화형 모드로 들어올 때) 채팅 기록 초기화
+# 모드가 변경되면 (특히 대화형 모드로 들어올 때) 채팅 기록 및 메모리 초기화
 if st.session_state.prev_mode != mode:
     if mode.startswith("💬"):
         st.session_state.chat_messages = []
+        st.session_state.memory.clear()
     st.session_state.prev_mode = mode
 
 # -------------------------------
@@ -434,8 +432,6 @@ else:
 # -------------------------------
 # 3️⃣ 모드별 동작 영역
 # -------------------------------
-#st.markdown("### 3️⃣ 결과 보기 및 대화")
-
 if is_template_mode:
     # 모드 1: 작업 템플릿 모드 (드롭다운 선택 시 자동 실행)
 
@@ -479,14 +475,6 @@ if is_template_mode:
                 """,
                 unsafe_allow_html=True,
             )
-            # st.markdown(
-            #     f"""
-            #     <div class="app-card">
-            #         <h3>✏️ 작업 결과 – {task_mode}</h3>
-            #     </div>
-            #     """,
-            #     unsafe_allow_html=True,
-            # )
             st.write(st.session_state.last_task_result)
         else:
             st.info("작업 유형을 다시 선택해 주세요.")
@@ -506,12 +494,15 @@ else:
         if st.session_state.rag_chain is None:
             st.warning("먼저 문서를 업로드해야 대화형 모드를 사용할 수 있습니다.")
         else:
-            # 사용자 메시지 기록 및 화면 출력
+            # UI용 사용자 메시지 기록 및 출력
             st.session_state.chat_messages.append({"role": "user", "content": user_msg})
             with st.chat_message("user"):
                 st.markdown(user_msg)
 
-            history_text = build_history_text()
+            # 메모리에서 최근 대화 히스토리 불러오기
+            memory = st.session_state.memory
+            history_vars = memory.load_memory_variables({})
+            history_text = history_vars.get("history", "")
 
             # RAG 호출
             with st.chat_message("assistant"):
@@ -522,5 +513,11 @@ else:
                     answer = result.content
                     st.markdown(answer)
 
-            # 어시스턴트 메시지 기록
+            # UI용 어시스턴트 메시지 기록
             st.session_state.chat_messages.append({"role": "assistant", "content": answer})
+
+            # 메모리에 이번 턴 저장
+            memory.save_context(
+                {"input": user_msg},
+                {"output": answer},
+            )
